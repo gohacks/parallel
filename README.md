@@ -23,6 +23,7 @@ Here's a basic example of how to use the parallel library:
 package main
 
 import (
+	"context"
 	"fmt"
 	"time"
 	"github.com/gohacks/parallel"
@@ -30,28 +31,28 @@ import (
 
 func main() {
 	// Create a new pool with a maximum of 3 concurrent goroutines
-	pool := parallel.New(3)
-
-	// Define a task function
-	func() {
-		
-	}
+	// with not stop in case of error
+	pool := parallel.New(context.Background(), 3, false)
 
 	// Add tasks to the pool
 	for i := 1; i <= 10; i++ {
 		pool.Run(func() {
-            yourFunction(yourParams) // call your functions here
-	    })
+			yourFunction(yourParams) // call your functions here
+		})
 	}
 
 	// Wait for all tasks to complete
 	pool.Wait()
+
+	if len(parallel.Errors()) > 0 {
+		// Do something in case of error
+	}
 }
 ```
 
 ## API
 
-New(maxGoroutines int) *Parallel
+New(ctx context.Context, maxGoroutines int, cancelOnError bool) *Parallel
 Creates a new instance of Parallel with the specified limit of goroutines.
 
 maxGoroutines: The maximum number of goroutines that can run concurrently.
